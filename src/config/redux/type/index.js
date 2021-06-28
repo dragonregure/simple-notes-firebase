@@ -1,4 +1,6 @@
 export const type = {
     REGISTER: 'REGISTER',
-    CHANGE_NAME: 'CHANGE_NAME'
+    LOGIN: 'LOGIN',
+    CHANGE_NAME: 'CHANGE_NAME',
+    SWITCH_BUTTON: 'SWITCH_BUTTON'
 }

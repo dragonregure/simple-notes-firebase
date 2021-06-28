@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import firebase from '../../../config/firebase';
 import {type} from '../../../config/redux/type';
-import { actionChangeName } from '../../../config/redux/action';
+import { actionChangeName, registerAPI } from '../../../config/redux/action';
 import './Register.scss';
+import Button from '../../../components/atoms/buttons';
 
 
 class Register extends Component {
@@ -12,10 +12,6 @@ class Register extends Component {
             email: '',
             password: ''
         }
-    }
-
-    goToDashboard = () => {
-        console.log(this.props.history);
     }
 
     handleChangeForm = (event) => {
@@ -27,20 +23,13 @@ class Register extends Component {
     }
 
     handleRegister = () => {
-        console.log(this.props);
         const {email, password} = this.state.formData;
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            // Signed in 
-            var user = userCredential.user;
-            this.props.register(user);
-            console.log('Done: ', this.props);
-        })
-        .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log(errorCode, errorMessage);
-            // ..
+        this.props.registerAPI({email, password});
+        this.setState({
+            formData: {
+                email: '',
+                password: ''
+            }
         });
     }
 
@@ -48,10 +37,10 @@ class Register extends Component {
         return(
             <div className='auth-container'>
                 <div className='auth-card'>
-                    <p className='auth-title'>{this.props.name}</p>
-                    <input className='input' type='email' placeholder='Email' name='email' onChange={this.handleChangeForm} />
-                    <input className='input' type='password' placeholder='Password' name='password' onChange={this.handleChangeForm} />
-                    <button className='btn' onClick={this.handleRegister}>Register</button>
+                    <p className='auth-title'>Register</p>
+                    <input className='input' type='email' placeholder='Email' name='email' onChange={this.handleChangeForm} value={this.state.formData.email} />
+                    <input className='input' type='password' placeholder='Password' name='password' onChange={this.handleChangeForm} value={this.state.formData.password} />
+                    <Button title='Register' onClick={this.handleRegister} active={this.props.active} />
                 </div>
                 {/* <Link to='/login'><button>Go to Login</button></Link> */}
             </div>
@@ -62,14 +51,16 @@ class Register extends Component {
 const mapStateToProps = (state) => {
     return {
         user: state.userData,
-        name: state.name
+        name: state.name,
+        active: state.buttonActive
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
         register: (newUserData) => dispatch({type: type.REGISTER, data: newUserData}),
-        delay: () => dispatch(actionChangeName())
+        delay: () => dispatch(actionChangeName()),
+        registerAPI: (data) => dispatch(registerAPI(data))
     }
 }
 

@@ -58,3 +58,12 @@ button.btn {
         cursor: pointer;
     }
 }
+
+button.btn.disabled {
+    background: #868e94;
+
+    &:hover {
+        cursor: not-allowed;
+        color: white;
+    }
+}

@@ -12,7 +12,6 @@ export const registerAPI = (data) => (dispatch) => {
     const {email, password} = data;
     firebase.auth().createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
-        var user = userCredential.user;
         dispatch({type: type.SWITCH_BUTTON});
         // this.props.register(user);
         // console.log('Done: ', this.props);
@@ -38,10 +37,42 @@ export const loginAPI = (data) => (dispatch) => {
             // ...
         })
         .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
             dispatch({type: type.SWITCH_BUTTON});
             reject(error);
+        });
+    });
+}
+
+export const sendNotesAPI = (data, userData) => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        firebase.database().ref(`notes/${userData.uid}`).push().set({
+            id: data.id,
+            title: data.title,
+            subtitle: data.subtitle,
+            content : data.content
+          }, (error) => {
+              error ? reject(error) : resolve(true);
+          });
+    });
+}
+
+export const getNotesAPI = (userData) => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        const dbRef = firebase.database().ref();
+        // dbRef.child("notes").child(userData.uid).get().then((response) => {
+        //     resolve(response);
+        // }).catch((error) => {
+        //     reject(error);
+        // });
+        dbRef.child("notes").child(userData.uid).on('value', (response) => {
+            const data = [];
+            Object.keys(response.val()).map(key => {
+                data.push(response.val()[key]);
+            });
+
+            dispatch({type: type.STORE_NOTES, data: data});
+            
+            resolve(data);
         });
     });
 }

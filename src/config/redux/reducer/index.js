@@ -4,7 +4,8 @@ const initialState = {
     userData: null,
     name: 'Delay',
     buttonActive: true,
-    isLogin: false
+    isLogin: false,
+    notes: null
 }
 
 const rootReducer = (state = initialState, action) => {
@@ -20,10 +21,15 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 name: 'CHANGED'
             }
-            case type.SWITCH_BUTTON:
+        case type.SWITCH_BUTTON:
             return {
                 ...state,
                 buttonActive: !state.buttonActive
+            }
+        case type.STORE_NOTES:
+            return {
+                ...state,
+                notes: action.data
             }
         default:
             return state;

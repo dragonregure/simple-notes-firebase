@@ -1,11 +1,13 @@
 import { type } from "../type";
 
 const initialState = {
-    userData: null,
+    userData: {
+        uid: 'example'
+    },
     name: 'Delay',
     buttonActive: true,
     isLogin: false,
-    notes: null
+    notes: []
 }
 
 const rootReducer = (state = initialState, action) => {

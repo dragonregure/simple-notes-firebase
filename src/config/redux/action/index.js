@@ -56,6 +56,19 @@ export const sendNotesAPI = (data, userData) => (dispatch) => {
     });
 }
 
+export const updateNotesAPI = (data, userData) => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        firebase.database().ref(`notes/${userData.uid}/${data.id}`).set({
+            id: data.id,
+            title: data.title,
+            subtitle: data.subtitle,
+            content : data.content
+          }, (error) => {
+              error ? reject(error) : resolve(true);
+          });
+    });
+}
+
 export const getNotesAPI = (userData) => (dispatch) => {
     return new Promise((resolve, reject) => {
         const dbRef = firebase.database().ref();
@@ -65,14 +78,29 @@ export const getNotesAPI = (userData) => (dispatch) => {
         //     reject(error);
         // });
         dbRef.child("notes").child(userData.uid).on('value', (response) => {
-            const data = [];
-            Object.keys(response.val()).map(key => {
-                data.push(response.val()[key]);
-            });
+            if(response.val() == null) {
+                reject(response);
+            } else {
+                const data = [];
+                Object.keys(response.val()).map(key => {
+                    const newData = {
+                        ...response.val()[key],
+                        id: key
+                    }
+                    data.push(newData);
+                });
 
-            dispatch({type: type.STORE_NOTES, data: data});
-            
-            resolve(data);
+                dispatch({type: type.STORE_NOTES, data: data});
+                
+                resolve(data);
+            }
         });
+    });
+}
+
+export const deleteNotesAPI = (userData, cardData) => (dispatch) => {
+    return new Promise((resolve, reject) => {
+        firebase.database().ref(`notes/${userData.uid}/${cardData.id}`).remove();
+        resolve(true);
     });
 }
